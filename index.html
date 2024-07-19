@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Prices WDC</title>
+    <script src="https://connectors.tableau.com/libs/tableauwdc-2.3.latest.js"></script>
+    <script>
+        (function() {
+            var myConnector = tableau.makeConnector();
+
+            myConnector.getSchema = function(schemaCallback) {
+                var cols = [{
+                    id: "timestamp",
+                    dataType: tableau.dataTypeEnum.string
+                }, {
+                    id: "price",
+                    dataType: tableau.dataTypeEnum.float
+                }];
+
+                var tableSchema = {
+                    id: "stockPrices",
+                    alias: "Stock Prices",
+                    columns: cols
+                };
+
+                schemaCallback([tableSchema]);
+            };
+
+            myConnector.getData = function(table, doneCallback) {
+                fetch("http://localhost:5000/get_stock_prices")
+                    .then(response => response.json())
+                    .then(data => {
+                        table.appendRows(data);
+                        doneCallback();
+                    });
+            };
+
+            tableau.registerConnector(myConnector);
+
+            document.querySelector("#submitButton").addEventListener("click", function() {
+                tableau.connectionName = "Stock Prices Data";
+                tableau.submit();
+            });
+        })();
+    </script>
+</head>
+<body>
+    <h2>Stock Prices Web Data Connector</h2>
+    <button id="submitButton">Get Data!</button>
+</body>
+</html>
