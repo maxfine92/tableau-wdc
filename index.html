@@ -5,7 +5,6 @@
     <script src="https://connectors.tableau.com/libs/tableauwdc-2.3.latest.js"></script>
     <script>
         (function() {
-            console.log('Initializing WDC');
             var myConnector = tableau.makeConnector();
 
             myConnector.getSchema = function(schemaCallback) {
@@ -53,8 +52,8 @@
             };
 
             tableau.registerConnector(myConnector);
-            console.log('Connector registered');
 
+            // Wait until Tableau is fully initialized before adding event listeners
             document.addEventListener('DOMContentLoaded', function() {
                 console.log('DOM fully loaded and parsed');
                 tableau.init({
@@ -62,12 +61,17 @@
                         console.log('Interactive phase change:', phase);
                         if (phase === tableau.phaseEnum.interactivePhase) {
                             console.log('Tableau is interactive');
-                            // Add the event listener when Tableau is ready
-                            document.querySelector("#submitButton").addEventListener("click", function() {
-                                console.log('Submit button clicked');
-                                tableau.connectionName = "Stock Prices Data";
-                                tableau.submit();
-                            });
+                            // Check if the button exists and add the event listener
+                            var submitButton = document.querySelector("#submitButton");
+                            if (submitButton) {
+                                submitButton.addEventListener("click", function() {
+                                    console.log('Submit button clicked');
+                                    tableau.connectionName = "Stock Prices Data";
+                                    tableau.submit();
+                                });
+                            } else {
+                                console.error('Submit button not found');
+                            }
                         }
                     }
                 });
