@@ -5,6 +5,7 @@
     <script src="https://connectors.tableau.com/libs/tableauwdc-2.3.latest.js"></script>
     <script>
         (function() {
+            console.log('Initializing WDC');
             var myConnector = tableau.makeConnector();
 
             myConnector.getSchema = function(schemaCallback) {
@@ -52,13 +53,15 @@
             };
 
             tableau.registerConnector(myConnector);
+            console.log('Connector registered');
 
-            // Ensure Tableau is initialized before adding the event listener
             document.addEventListener('DOMContentLoaded', function() {
                 console.log('DOM fully loaded and parsed');
                 tableau.init({
                     onInteractivePhaseChange: function(phase) {
+                        console.log('Interactive phase change:', phase);
                         if (phase === tableau.phaseEnum.interactivePhase) {
+                            console.log('Tableau is interactive');
                             // Add the event listener when Tableau is ready
                             document.querySelector("#submitButton").addEventListener("click", function() {
                                 console.log('Submit button clicked');
