@@ -8,6 +8,7 @@
             var myConnector = tableau.makeConnector();
 
             myConnector.getSchema = function(schemaCallback) {
+                console.log('getSchema called');
                 var cols = [{
                     id: "timestamp",
                     dataType: tableau.dataTypeEnum.string
@@ -26,15 +27,21 @@
             };
 
             myConnector.getData = function(table, doneCallback) {
-                fetch("https://daaf-35-229-99-0.ngrok-free.app/get_stock_prices")  // Replace YOUR_NGROK_URL with the actual ngrok URL
-                    .then(response => response.json())
+                console.log('getData called');
+                fetch("https://daaf-35-229-99-0.ngrok-free.app/get_stock_prices")
+                    .then(response => {
+                        console.log('Response received:', response);
+                        return response.json();
+                    })
                     .then(data => {
+                        console.log('Data received:', data);
                         var formattedData = data.map(function(record) {
                             return {
                                 timestamp: record[0],
                                 price: record[1]
                             };
                         });
+                        console.log('Formatted data:', formattedData);
                         table.appendRows(formattedData);
                         doneCallback();
                     })
@@ -47,6 +54,7 @@
             tableau.registerConnector(myConnector);
 
             document.querySelector("#submitButton").addEventListener("click", function() {
+                console.log('Submit button clicked');
                 tableau.connectionName = "Stock Prices Data";
                 tableau.submit();
             });
