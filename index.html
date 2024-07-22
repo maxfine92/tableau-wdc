@@ -53,10 +53,21 @@
 
             tableau.registerConnector(myConnector);
 
-            document.querySelector("#submitButton").addEventListener("click", function() {
-                console.log('Submit button clicked');
-                tableau.connectionName = "Stock Prices Data";
-                tableau.submit();
+            // Ensure Tableau is initialized before adding the event listener
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('DOM fully loaded and parsed');
+                tableau.init({
+                    onInteractivePhaseChange: function(phase) {
+                        if (phase === tableau.phaseEnum.interactivePhase) {
+                            // Add the event listener when Tableau is ready
+                            document.querySelector("#submitButton").addEventListener("click", function() {
+                                console.log('Submit button clicked');
+                                tableau.connectionName = "Stock Prices Data";
+                                tableau.submit();
+                            });
+                        }
+                    }
+                });
             });
         })();
     </script>
