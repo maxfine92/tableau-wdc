@@ -26,10 +26,20 @@
             };
 
             myConnector.getData = function(table, doneCallback) {
-                fetch("http://localhost:5000/get_stock_prices")
+                fetch("https://daaf-35-229-99-0.ngrok-free.app/get_stock_prices")  // Replace YOUR_NGROK_URL with the actual ngrok URL
                     .then(response => response.json())
                     .then(data => {
-                        table.appendRows(data);
+                        var formattedData = data.map(function(record) {
+                            return {
+                                timestamp: record[0],
+                                price: record[1]
+                            };
+                        });
+                        table.appendRows(formattedData);
+                        doneCallback();
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
                         doneCallback();
                     });
             };
